@@ -1,0 +1,51 @@
+---
+import type { GetStaticPaths } from "astro";
+// Código Server Side Only - Momento de construcción BUILD TIME
+import MainLayout from "../../layouts/MainLayout.astro";
+import type { PokemonListResponse } from "../../interfaces/pokemon-list.response";
+import PokemonCard from "../../components/pokemons/PokemonCard.astro";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+	const { results } = (await resp.json()) as PokemonListResponse;
+
+	return paginate(results, { pageSize: 20 });
+}) satisfies GetStaticPaths;
+
+const title = "Pokédex | Home";
+
+const { page } = Astro.props;
+---
+
+<MainLayout title={title}>
+	<h1 class="text-3xl">Listado de pokémons</h1>
+	<hr />
+	<section
+		aria-label="Listado de Pokémons"
+		class="grid grid-cols-1 sm:grid-cols-4 md:grid-cols-5 gap-4 mt-5"
+	>
+		{
+			page.data.map(({ name, url }) => (
+				<PokemonCard name={name} url={url} />
+			))
+		}
+	</section>
+
+	<section class="flex justify-between mt-10 w-full">
+		<a class="btn" href={page.url.prev}>Anteriores</a>
+		<span>Página 1</span>
+		<a class="btn" href={page.url.next}>Siguientes</a>
+	</section>
+</MainLayout>
+
+<style>
+	@reference "tailwindcss";
+
+	.btn {
+		@apply bg-blue-500 p-2 text-white rounded-md
+	}
+
+	.disabled {
+		@apply bg-gray-600 text-gray-400;
+	}
+</style>
