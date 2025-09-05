@@ -48,14 +48,20 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
     <section class="mt-10 mx-10 flex flex-col justify-center items-center">
         <div class="flex flex-row">
             <div>
-                <button onclick="history.back()" class="text-blue-500">Regresar</button>
+                <button onclick="history.back()" class="text-blue-500"
+                    >Regresar</button
+                >
                 <Title>{name}</Title>
             </div>
-            <button id="btn-favorite" class="ml-4">
+            <button
+                id="btn-favorite"
+                class="ml-4"
+                data-name={name}
+                data-id={id}
+            >
                 <Icon name="heart-outline" size={50} />
                 <Icon class="hidden" name="heart-bold" size={50} />
             </button>
-    
         </div>
 
         <PokemonCard name={name} url={url} isBig />
@@ -66,6 +72,30 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
         </audio>
     </section>
 </MainLayout>
+
+<script>
+    interface FavoritePokemon {
+        name: string;
+        id: number;
+    }
+
+    const handlePageLoad = () => {
+        const btnFavorite = document.querySelector(
+            "#btn-favorite",
+        ) as HTMLButtonElement;
+
+        if (!btnFavorite) return;
+
+        const name = btnFavorite.dataset.name;
+        const id = btnFavorite.dataset.id;
+
+        btnFavorite.addEventListener("click", () => {
+            console.log({ name, id });
+        });
+    };
+
+    document.addEventListener("astro:page-load", handlePageLoad);
+</script>
 
 <style scoped>
     /* @reference "../../styles/global.css"; */
