@@ -59,8 +59,8 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
                 data-name={name}
                 data-id={id}
             >
-                <Icon name="heart-outline" size={50} />
-                <Icon class="hidden" name="heart-bold" size={50} />
+                <Icon data-outline name="heart-outline" size={50} />
+                <Icon data-bold class="hidden" name="heart-bold" size={50} />
             </button>
         </div>
 
@@ -80,17 +80,51 @@ const imageSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
     }
 
     const handlePageLoad = () => {
+        let favoritePokemons: FavoritePokemon[] = JSON.parse(
+            localStorage.getItem("favorites") ?? "[]",
+        );
+
         const btnFavorite = document.querySelector(
             "#btn-favorite",
         ) as HTMLButtonElement;
 
         if (!btnFavorite) return;
 
-        const name = btnFavorite.dataset.name;
-        const id = btnFavorite.dataset.id;
+        const name = btnFavorite.dataset.name ?? "";
+        const id = btnFavorite.dataset.id ?? "";
+
+        const heartOutline = btnFavorite.querySelector(
+            "[data-outline]",
+        ) as HTMLElement;
+        const heartBold = btnFavorite.querySelector(
+            "[data-bold]",
+        ) as HTMLElement;
+
+        const toggleFavorite = () => {
+            const isFavorite = favoritePokemons.some(
+                (fav) => fav.name === name,
+            );
+
+            if (isFavorite) {
+                // Remover
+                favoritePokemons = favoritePokemons.filter(
+                    (fav) => fav.name !== name,
+                );
+            } else {
+                // Agregar
+                favoritePokemons.push({
+                    id: +id,
+                    name: name,
+                });
+            }
+
+            localStorage.setItem("favorites", JSON.stringify(favoritePokemons));
+        };
 
         btnFavorite.addEventListener("click", () => {
-            console.log({ name, id });
+            heartBold.classList.toggle("hidden");
+            heartOutline.classList.toggle("hidden");
+            toggleFavorite();
         });
     };
 
